@@ -712,12 +712,17 @@ import Button from "../Button.astro";
         // Paso 2: Registrar venta con URL del archivo
         progressText.textContent = "Registrando venta...";
 
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        const fechaRegistro = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
         const data = {
           numero_factura: formData.get("numero_factura"),
           producto_id: formData.get("producto_jlc"), // Ya tenemos el ID del input hidden
           numero_serie: formData.get("numero_serie"),
           fecha_venta: formData.get("fecha_venta"),
           foto_factura: fotoUrl || "",
+          fecha_registro: fechaRegistro,
         };
 
         const response = await fetch(`${API_BASE}/sales/create.php`, {
