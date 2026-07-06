@@ -218,9 +218,77 @@
                 <p id="popup-fecha-registro">-</p>
               </div>
             </div>
+
+            <!-- Botón restablecer contraseña: solo visible para admin (JS lo muestra) -->
+            <div id="reset-pwd-btn-row" style="display:none; margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid var(--color-border);">
+              <button
+                id="btn-reset-pwd"
+                class="btn-reset-pwd"
+                aria-label="Restablecer contraseña del usuario"
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                </svg>
+                Restablecer Contraseña
+              </button>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal: Confirmación de Restablecimiento ── -->
+<div id="reset-pwd-confirm-modal" class="rpwd-overlay" role="dialog" aria-modal="true" aria-labelledby="rpwd-confirm-title">
+  <div class="rpwd-dialog">
+    <div class="rpwd-dialog-header">
+      <div class="rpwd-icon-wrap rpwd-icon-warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg>
+      </div>
+      <h3 id="rpwd-confirm-title" class="rpwd-title">Restablecer Contraseña</h3>
+    </div>
+    <p class="rpwd-body-text">
+      Se generará una nueva contraseña aleatoria de 15 caracteres para
+      <strong id="rpwd-target-name">este usuario</strong>.
+      La contraseña actual quedará inutilizable. ¿Deseas continuar?
+    </p>
+    <div class="rpwd-actions">
+      <button id="rpwd-cancel-btn" class="rpwd-btn rpwd-btn-secondary">Cancelar</button>
+      <button id="rpwd-confirm-btn" class="rpwd-btn rpwd-btn-primary">Sí, restablecer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal: Resultado con Contraseña Generada ── -->
+<div id="reset-pwd-result-modal" class="rpwd-overlay" role="dialog" aria-modal="true" aria-labelledby="rpwd-result-title">
+  <div class="rpwd-dialog">
+    <div class="rpwd-dialog-header">
+      <div class="rpwd-icon-wrap rpwd-icon-success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h3 id="rpwd-result-title" class="rpwd-title">Contraseña Restablecida</h3>
+    </div>
+    <p class="rpwd-body-text">
+      La nueva contraseña para <strong id="rpwd-result-name"></strong> es:
+    </p>
+    <div class="rpwd-pwd-box">
+      <span id="rpwd-generated-pwd" class="rpwd-pwd-text"></span>
+      <button id="rpwd-copy-btn" class="rpwd-copy-btn" aria-label="Copiar contraseña">
+        <svg id="rpwd-copy-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+          <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+        </svg>
+        <span id="rpwd-copy-label">Copiar</span>
+      </button>
+    </div>
+    <p class="rpwd-hint">Comparte esta contraseña con el asesor de forma segura. No se volverá a mostrar.</p>
+    <div class="rpwd-actions">
+      <button id="rpwd-close-result-btn" class="rpwd-btn rpwd-btn-primary" style="width:100%">Entendido, cerrar</button>
     </div>
   </div>
 </div>
@@ -531,6 +599,251 @@
   }
 
   /* Responsive */
+  /* ── Estilos: Modales de Restablecimiento de Contraseña ── */
+  .rpwd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    z-index: 10001; /* Por encima del popup de usuario */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  .rpwd-overlay.show {
+    display: flex;
+  }
+
+  .rpwd-dialog {
+    background: var(--color-bg-main);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    width: 100%;
+    max-width: 460px;
+    animation: slideUp 0.2s ease-out;
+  }
+
+  .rpwd-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .rpwd-icon-wrap {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .rpwd-icon-wrap svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .rpwd-icon-warn {
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+  }
+
+  .rpwd-icon-success {
+    background: rgba(66, 153, 225, 0.15);
+    color: var(--color-accent-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .rpwd-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin: 0;
+  }
+
+  .rpwd-body-text {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .rpwd-body-text strong {
+    color: var(--color-text-main);
+  }
+
+  /* Caja que muestra la contraseña generada */
+  .rpwd-pwd-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-bg-cardb);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .rpwd-pwd-text {
+    flex: 1;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    letter-spacing: 0.08em;
+    word-break: break-all;
+    user-select: all;
+  }
+
+  .rpwd-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--color-accent);
+    color: var(--color-accent-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .rpwd-copy-btn svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .rpwd-copy-btn:hover {
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .rpwd-copy-btn.copied {
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    color: var(--color-accent-text);
+  }
+
+  .rpwd-hint {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+  }
+
+  /* Acciones del modal */
+  .rpwd-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .rpwd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--color-border);
+  }
+
+  .rpwd-btn-secondary {
+    background: transparent;
+    color: var(--color-text-secondary);
+  }
+
+  .rpwd-btn-secondary:hover {
+    background: var(--color-bg-cardb);
+    color: var(--color-text-main);
+  }
+
+  .rpwd-btn-primary {
+    background: var(--color-accent);
+    color: var(--color-accent-text);
+    border-color: var(--color-border);
+  }
+
+  .rpwd-btn-primary:hover {
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .rpwd-btn-primary:active,
+  .rpwd-btn-secondary:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Botón restablecer contraseña en el popup */
+  .btn-reset-pwd {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-reset-pwd svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .btn-reset-pwd:hover {
+    background: var(--color-bg-cardb);
+    color: var(--color-text-main);
+    border-color: var(--color-accent);
+  }
+
+  .btn-reset-pwd:active {
+    transform: scale(0.98);
+  }
+
+  /* Disabled state for confirm button during loading */
+  .rpwd-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  @media (max-width: 768px) {
+    .rpwd-dialog {
+      padding: 1.5rem;
+    }
+    .rpwd-actions {
+      flex-direction: column-reverse;
+    }
+    .rpwd-btn {
+      width: 100%;
+    }
+  }
+  /* ── FIN Estilos Restablecimiento ── */
+
   @media (max-width: 768px) {
     .popup-container {
       max-height: 100vh;
@@ -879,6 +1192,14 @@
           : "-";
 
       this.showProfile();
+
+      // Mostrar botón de restablecer contraseña solo para admins
+      if (this.isAdmin) {
+        const resetRow = document.getElementById("reset-pwd-btn-row");
+        if (resetRow) resetRow.style.display = "block";
+        // Rebind para evitar listeners duplicados
+        if (window.ResetPasswordModule) window.ResetPasswordModule.bindTrigger();
+      }
     },
 
     renderRoleField(currentRole) {
@@ -994,8 +1315,167 @@
         field.textContent = "-";
         field.className = field.classList.contains("badge") ? "badge" : "";
       });
+      // Ocultar el botón de reset al limpiar
+      const resetRow = document.getElementById("reset-pwd-btn-row");
+      if (resetRow) resetRow.style.display = "none";
     },
   };
+
+  // ── Módulo: Restablecimiento de Contraseña ──────────────────────────────────
+  (function () {
+    const API_BASE =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+        ? "http://localhost:8000"
+        : window.location.origin + "/api";
+
+    const confirmModal = document.getElementById("reset-pwd-confirm-modal");
+    const resultModal  = document.getElementById("reset-pwd-result-modal");
+    const cancelBtn    = document.getElementById("rpwd-cancel-btn");
+    const confirmBtn   = document.getElementById("rpwd-confirm-btn");
+    const closeResultBtn = document.getElementById("rpwd-close-result-btn");
+    const copyBtn      = document.getElementById("rpwd-copy-btn");
+    const copyLabel    = document.getElementById("rpwd-copy-label");
+    const generatedPwdEl = document.getElementById("rpwd-generated-pwd");
+    const targetNameConfirm = document.getElementById("rpwd-target-name");
+    const targetNameResult  = document.getElementById("rpwd-result-name");
+    const resetBtnTrigger = document.getElementById("btn-reset-pwd");
+
+    // Abrir modal de confirmación
+    function openConfirmModal() {
+      const popup = window.UserProfilePopup;
+      if (!popup || !popup.currentUserData) return;
+      const userName = `${popup.currentUserData.nombre || ""} ${popup.currentUserData.apellido || ""}`.trim();
+      if (targetNameConfirm) targetNameConfirm.textContent = userName || "este usuario";
+      if (confirmModal) confirmModal.classList.add("show");
+    }
+
+    // Cerrar modal de confirmación
+    function closeConfirmModal() {
+      if (confirmModal) confirmModal.classList.remove("show");
+    }
+
+    // Abrir modal de resultado
+    function openResultModal(password, userName) {
+      if (generatedPwdEl) generatedPwdEl.textContent = password;
+      if (targetNameResult) targetNameResult.textContent = userName;
+      // Resetear estado del botón copiar
+      if (copyLabel) copyLabel.textContent = "Copiar";
+      if (copyBtn) copyBtn.classList.remove("copied");
+      if (resultModal) resultModal.classList.add("show");
+    }
+
+    // Cerrar modal de resultado y limpiar la contraseña por seguridad
+    function closeResultModal() {
+      if (resultModal) resultModal.classList.remove("show");
+      setTimeout(() => {
+        if (generatedPwdEl) generatedPwdEl.textContent = "";
+      }, 300);
+    }
+
+    // Confirmar y hacer la petición
+    async function doResetPassword() {
+      const popup = window.UserProfilePopup;
+      if (!popup || !popup.currentUserId) return;
+
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Restableciendo...";
+      }
+
+      const userName = `${popup.currentUserData?.nombre || ""} ${popup.currentUserData?.apellido || ""}`.trim();
+
+      try {
+        const res = await fetch(`${API_BASE}/users/reset_password.php`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: popup.currentUserId }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.status === 200 && data.data?.password) {
+          closeConfirmModal();
+          openResultModal(data.data.password, data.data.userName || userName);
+        } else {
+          closeConfirmModal();
+          alert(data.message || "Error al restablecer la contraseña. Intenta nuevamente.");
+        }
+      } catch (err) {
+        closeConfirmModal();
+        alert("Error de conexión: " + (err.message || "intenta nuevamente."));
+      } finally {
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Sí, restablecer";
+        }
+      }
+    }
+
+    // Copiar contraseña al portapapeles
+    async function copyPassword() {
+      const pwd = generatedPwdEl?.textContent || "";
+      if (!pwd) return;
+      try {
+        await navigator.clipboard.writeText(pwd);
+        if (copyLabel) copyLabel.textContent = "Copiado";
+        if (copyBtn) copyBtn.classList.add("copied");
+        setTimeout(() => {
+          if (copyLabel) copyLabel.textContent = "Copiar";
+          if (copyBtn) copyBtn.classList.remove("copied");
+        }, 2000);
+      } catch (err) {
+        // Fallback para navegadores sin soporte de clipboard API
+        const range = document.createRange();
+        if (generatedPwdEl) {
+          range.selectNode(generatedPwdEl);
+          window.getSelection()?.removeAllRanges();
+          window.getSelection()?.addRange(range);
+        }
+        document.execCommand("copy");
+        if (copyLabel) copyLabel.textContent = "Copiado";
+        setTimeout(() => { if (copyLabel) copyLabel.textContent = "Copiar"; }, 2000);
+      }
+    }
+
+    // Cerrar al hacer click en el backdrop del confirmModal
+    if (confirmModal) {
+      confirmModal.addEventListener("click", (e) => {
+        if (e.target === confirmModal) closeConfirmModal();
+      });
+    }
+    if (resultModal) {
+      resultModal.addEventListener("click", (e) => {
+        if (e.target === resultModal) closeResultModal();
+      });
+    }
+
+    // Cerrar con ESC
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if (confirmModal?.classList.contains("show")) closeConfirmModal();
+      if (resultModal?.classList.contains("show")) closeResultModal();
+    });
+
+    // Listeners de botones
+    cancelBtn?.addEventListener("click", closeConfirmModal);
+    confirmBtn?.addEventListener("click", doResetPassword);
+    closeResultBtn?.addEventListener("click", closeResultModal);
+    copyBtn?.addEventListener("click", copyPassword);
+
+    // Exponer función para que UserProfilePopup.displayProfile pueda conectar el trigger
+    window.ResetPasswordModule = {
+      bindTrigger() {
+        // Reasignar listener cada vez que se abre un usuario (para evitar duplicados)
+        const freshBtn = resetBtnTrigger;
+        if (!freshBtn) return;
+        const newBtn = freshBtn.cloneNode(true);
+        freshBtn.replaceWith(newBtn);
+        newBtn.addEventListener("click", openConfirmModal);
+      },
+    };
+  })();
 
   // Initialize when DOM is ready
   if (document.readyState === "loading") {
