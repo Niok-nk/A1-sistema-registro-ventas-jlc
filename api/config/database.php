@@ -164,6 +164,7 @@ class Database {
                 $options[1002] = "SET NAMES {$this->charset}"; // PDO::MYSQL_ATTR_INIT_COMMAND
                 
                 $this->conn = new PDO($dsn, $this->username, $this->password, $options);
+                $this->conn->exec("SET time_zone = '-05:00'");
             }
             
             // Log de éxito (solo en desarrollo)
