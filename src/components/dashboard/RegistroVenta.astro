@@ -13,9 +13,9 @@ import Button from "../Button.astro";
         <span class="admin-badge">Admin</span>
       </label>
       <select id="cfg-meses-atras" class="form-input admin-select">
-        <option value="0">Solo mes actual</option>
+        <option value="0" selected>Solo mes actual</option>
         <option value="1">1 mes atrás</option>
-        <option value="2" selected>2 meses atrás</option>
+        <option value="2">2 meses atrás</option>
         <option value="3">3 meses atrás</option>
         <option value="4">4 meses atrás</option>
         <option value="5">5 meses atrás</option>
@@ -463,7 +463,7 @@ import Button from "../Button.astro";
     const configToggle = document.getElementById("admin-config-toggle");
 
     // Leer meses guardados en sessionStorage (persiste mientras la sesión esté activa)
-    let mesesAtras = parseInt(sessionStorage.getItem("cfg_meses_atras") ?? "2", 10);
+    let mesesAtras = parseInt(sessionStorage.getItem("cfg_meses_atras") ?? "0", 10);
     if (cfgSelect) cfgSelect.value = String(mesesAtras);
 
     function calcRango(meses) {
