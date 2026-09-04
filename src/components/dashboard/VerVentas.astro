@@ -289,6 +289,14 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
              </select>`
           : `<span class="status-badge status-${(sale.estado || "pendiente").toLowerCase()}">${sale.estado || "Pendiente"}</span>`;
 
+        const rawCambio = sale.fecha_cambio_estado || "";
+        const cambioParts = rawCambio.includes("T")
+          ? rawCambio.split("T")
+          : rawCambio.split(" ");
+        const fechaCambioHTML = rawCambio
+          ? `<div style="font-size:0.7rem;color:var(--color-text-secondary);margin-top:0.3rem;white-space:nowrap">Cambio: ${cambioParts[0]}${cambioParts[1] ? " " + cambioParts[1].slice(0, 5) : ""}</div>`
+          : "";
+
         const rawRegistered = sale.created_at || "";
         const registeredParts = rawRegistered.includes("T")
           ? rawRegistered.split("T")
@@ -315,7 +323,10 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
                   <div class="clickable-user" data-user-id="${sale.usuario_id}" style="font-size:0.75rem;color:var(--color-text-secondary)">CC: ${sale.cedula_asesor || "N/A"}</div>
                 </td>
                 <td>${sale.nombre_distribuidor || "N/A"}</td>
-                <td>${estadoHTML}</td>
+                <td>
+                  ${estadoHTML}
+                  ${fechaCambioHTML}
+                </td>
                 <td>${photoBtn}</td>
                 <td>
                   ${
