@@ -535,7 +535,14 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         const result = await response.json();
 
         if (result.status === 200) {
-          alert("✅ Estado actualizado exitosamente");
+          const wa = result.data && result.data.whatsapp;
+          let msg = "✅ Estado actualizado exitosamente";
+          if (wa && wa.ok) {
+            msg += "\n📱 Notificación WhatsApp enviada al asesor.";
+          } else if (wa) {
+            msg += "\n⚠️ WhatsApp no enviado: " + (wa.error || "desconocido");
+          }
+          alert(msg);
           // Actualizar el atributo data-current-status
           selectElement.setAttribute("data-current-status", newStatus);
           // Recargar ventas para reflejar cambios
