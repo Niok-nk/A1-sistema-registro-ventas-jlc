@@ -1,4 +1,4 @@
-﻿---
+---
 import Sidebar from "../components/dashboard/Sidebar.astro";
 import HamburgerMenu from "../components/dashboard/HamburgerMenu.astro";
 import ResponsiveSidebar from "../components/dashboard/ResponsiveSidebar.astro";
@@ -199,7 +199,8 @@ const { title } = Astro.props;
       } catch (e) {
         console.warn("Error en logout endpoint:", e);
       }
-      // 2. Limpiar datos de UI del localStorage
+      // 2. Limpiar token y datos de UI del localStorage
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("userRole");
       // Redirigir a la página de inicio

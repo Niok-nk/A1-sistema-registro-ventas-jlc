@@ -6,6 +6,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// ── Rate limiting por IP ─────────────────────────────────────────────────────
+// Máximo 5 registros por IP en una ventana de 10 minutos
+(function () {
+    $ip       = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $ipHash   = hash('sha256', $ip); // No guardar IPs crudas
+    $limit    = 5;
+    $windowSec = 600; // 10 minutos
+
+    try {
+        require_once __DIR__ . '/../config/database.php';
+        $db   = Database::getInstance();
+        $conn = $db->getConnection();
+
+        // Crear tabla si no existe (se ejecuta una sola vez)
+        $conn->exec("
+            CREATE TABLE IF NOT EXISTS rate_limit_registro (
+                ip_hash   TEXT NOT NULL,
+                created_at INTEGER NOT NULL
+            )
+        ");
+
+        $since = time() - $windowSec;
+
+        // Limpiar registros viejos
+        $conn->prepare("DELETE FROM rate_limit_registro WHERE created_at < :since")
+             ->execute([':since' => $since]);
+
+        // Contar intentos recientes de esta IP
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM rate_limit_registro WHERE ip_hash = :h AND created_at >= :since");
+        $stmt->execute([':h' => $ipHash, ':since' => $since]);
+        $count = (int) $stmt->fetchColumn();
+
+        if ($count >= $limit) {
+            http_response_code(429);
+            echo json_encode([
+                'status'  => 429,
+                'message' => 'Demasiadas solicitudes. Intenta de nuevo en unos minutos.',
+            ]);
+            exit;
+        }
+
+        // Registrar este intento
+        $conn->prepare("INSERT INTO rate_limit_registro (ip_hash, created_at) VALUES (:h, :t)")
+             ->execute([':h' => $ipHash, ':t' => time()]);
+
+    } catch (Exception $e) {
+        // Si falla el rate limiting, se deja pasar (no bloquear el registro por error interno)
+        error_log('rate_limit_registro error: ' . $e->getMessage());
+    }
+})();
+// ────────────────────────────────────────────────────────────────────────────
+
 // Detectar cuando PHP trunca el POST por exceder post_max_size
 // En ese caso $_POST y $_FILES quedan vacíos pero Content-Length está presente
 $contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);

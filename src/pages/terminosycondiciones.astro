@@ -156,13 +156,30 @@ import Card from "../components/Card.astro";
           </p>
         </section>
 
+        <section class="term-section">
+          <h2>12. Declaraciones del Asesor</h2>
+          <p>Al registrarse y participar en el programa, el asesor declara y acepta que:</p>
+          <ul class="declaraciones-list">
+            <li>Acepta el tratamiento de datos personales.</li>
+            <li>Acepta recibir contacto comercial.</li>
+            <li>Declara que toda la información proporcionada es verdadera.</li>
+            <li>Declara de manera libre, expresa, voluntaria e informada que su participación en el Programa de Incentivos de JL y RB S.A.S. – JLC tiene naturaleza estrictamente comercial y promocional, y no configura relación laboral, ni contrato de trabajo, ni contrato realidad, ni vínculo civil o comercial alguno con JLC, conforme a los artículos 22, 23 y 24 del Código Sustantivo del Trabajo.</li>
+            <li>Reconoce que los incentivos, bonificaciones o beneficios que eventualmente reciba no constituyen salario, no son remuneración, no son habituales ni periódicos, y no integran la base salarial, de conformidad con el artículo 128 del Código Sustantivo del Trabajo, ni generan prestaciones sociales, aportes a seguridad social o parafiscales.</li>
+            <li>Manifiesta que no existe subordinación jurídica, técnica ni económica por parte de JLC, que no está sujeto a órdenes, control disciplinario, cumplimiento de horarios, metas permanentes, exclusividad, ni dependencia alguna frente a JLC.</li>
+            <li>Declara que mantiene una relación laboral, comercial o contractual exclusiva y autónoma con un distribuidor, empleador o empresa distinta a JLC, siendo dicha relación ajena e independiente, sin que JLC asuma responsabilidad solidaria, subsidiaria o concurrente.</li>
+            <li>Acepta que los incentivos corresponden a liberalidades empresariales ocasionales, otorgadas como reconocimiento comercial condicionado, sin generar derechos adquiridos, estabilidad, continuidad, expectativa de pago ni ingresos recurrentes.</li>
+            <li>Asume de manera exclusiva las obligaciones tributarias, fiscales y declarativas ante la DIAN, incluyendo impuestos, retenciones o costos que se deriven de los incentivos recibidos, exonerando expresa e irrevocablemente a JLC de cualquier responsabilidad fiscal o laboral.</li>
+            <li>Declara que esta aceptación no constituye contrato verbal ni escrito, ni podrá ser utilizada para alegar vínculo laboral o contrato realidad en el presente o en el futuro.</li>
+          </ul>
+        </section>
+
         <section class="term-section highlight-accept">
-          <h2>12. Aceptación</h2>
+          <h2>13. Aceptación Final</h2>
           <p>
             La participación en el programa implica la <strong
               >aceptación total, expresa e irrevocable</strong
             >
-            de estos Términos y Condiciones.
+            de estos Términos y Condiciones, así como de todas las declaraciones legales antes mencionadas.
           </p>
         </section>
 
@@ -321,14 +338,18 @@ import Card from "../components/Card.astro";
     text-align: justify;
   }
 
-  .term-section ul {
+  .term-section ul,
+  .declaraciones-list {
     margin: 1rem 0 1rem 1.5rem;
     list-style-type: disc;
   }
 
-  .term-section li {
-    margin-bottom: 0.5rem;
+  .term-section li,
+  .declaraciones-list li {
+    margin-bottom: 0.75rem;
     padding-left: 0.5rem;
+    line-height: 1.6;
+    text-align: justify;
   }
 
   .highlight-warning {

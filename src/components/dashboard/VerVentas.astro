@@ -289,8 +289,13 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
              </select>`
           : `<span class="status-badge status-${(sale.estado || "pendiente").toLowerCase()}">${sale.estado || "Pendiente"}</span>`;
 
+        const dateRegistered = sale.created_at
+          ? (sale.created_at.includes("T") ? sale.created_at.split("T")[0] : sale.created_at.split(" ")[0])
+          : "N/A";
+
         row.innerHTML = `
                 <td>${sale.id}</td>
+                <td>${dateRegistered}</td>
                 <td>${sale.fecha_venta || "N/A"}</td>
                 <td>${sale.numero_factura || "N/A"}</td>
                 <td>${sale.modelo_producto || sale.desc_producto || "N/A"}</td>
@@ -309,12 +314,13 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
                         class="obs-selector"
                         data-sale-id="${sale.id}"
                         ${sale.estado !== "rechazada" ? "disabled" : ""}
-                        style="font-size:0.72rem;padding:0.2rem 0.3rem;border-radius:var(--radius-sm);border:1px solid var(--color-border);background:var(--color-bg-card);color:var(--color-text-main);width:100%;max-width:170px;${sale.estado !== "rechazada" ? "opacity:0.35;cursor:not-allowed" : ""}"
+                        style="font-size:0.72rem;padding:0.2rem 0.3rem;border-radius:var(--radius-sm);border:1px solid var(--color-border);background:var(--color-bg-cardb);color:var(--color-text-main);width:100%;max-width:170px;${sale.estado !== "rechazada" ? "opacity:0.35;cursor:not-allowed" : ""}"
                       >
                         <option value="">-- Sin observación --</option>
                         <option value="Número de serie incorrecto o inválido" ${sale.observaciones === "Número de serie incorrecto o inválido" ? "selected" : ""}>N° serie incorrecto o inválido</option>
                         <option value="Factura sin código QR o CUFE (DIAN)" ${sale.observaciones === "Factura sin código QR o CUFE (DIAN)" ? "selected" : ""}>Sin QR o CUFE (DIAN)</option>
                         <option value="Venta sin registro en la DIAN" ${sale.observaciones === "Venta sin registro en la DIAN" ? "selected" : ""}>Sin registro DIAN</option>
+                        <option value="Fecha de venta inválida: no corresponde al mes en curso" ${sale.observaciones === "Fecha de venta inválida: no corresponde al mes en curso" ? "selected" : ""}>Fecha no corresponde al mes actual</option>
                       </select>`
                       : sale.estado === "rechazada" && sale.observaciones
                         ? `<span style="font-size:0.72rem;color:#fc8181">${sale.observaciones}</span>`

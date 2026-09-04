@@ -254,23 +254,18 @@
 
 <script is:inline>
   (function () {
-    // Clave única basada en el ID de usuario → reaparece en cada nuevo login
-    const _uStr = localStorage.getItem("user");
-    if (!_uStr) return; // Sin sesión, no hacer nada
+    // Clave única basada en el token JWT actual → reaparece en cada nuevo login
+    const token = localStorage.getItem("token");
+    if (!token) return; // Sin sesión, no hacer nada
 
-    let _uid;
-    try { _uid = JSON.parse(_uStr).id; } catch(e) { return; }
-    if (!_uid) return;
-
-    const sessionKey = "info_dismissed_" + _uid;
+    // Usamos los últimos 20 chars del token como identificador de sesión
+    const sessionKey = "info_dismissed_" + token.slice(-20);
 
     const overlay = document.getElementById("info-update-popup");
     const profileBtn = document.getElementById("info-profile-btn");
     const skipBtn = document.getElementById("info-skip-btn");
 
-    function maybeShow() {
-      // Solo omitir si fue descartado en ESTA sesión (mismo token)
-      if (sessionStorage.getItem(sessionKey)) return;
+    function show() {
       overlay.classList.add("show");
       document.body.style.overflow = "hidden";
     }
@@ -279,6 +274,41 @@
       sessionStorage.setItem(sessionKey, "1");
       overlay.classList.remove("show");
       document.body.style.overflow = "";
+    }
+
+    async function checkDocumentsAndMaybeShow() {
+      // Si ya fue descartado en esta sesión, no molestamos
+      if (sessionStorage.getItem(sessionKey)) return;
+
+      try {
+        const API_BASE =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1"
+            ? "http://localhost:8000"
+            : window.location.origin + "/api";
+
+        const res = await fetch(`${API_BASE}/user/profile.php`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) return; // Si falla la consulta, no interrumpir al usuario
+
+        const json = await res.json();
+        const userData = json?.data;
+
+        if (!userData) return;
+
+        // Mostrar solo si falta al menos uno de los dos documentos
+        const faltaCertificado = !userData.certificado;
+        const faltaRut = !userData.certificado_rut;
+
+        if (faltaCertificado || faltaRut) {
+          show();
+        }
+        // Si ambos documentos están cargados → no mostramos nada
+      } catch (e) {
+        // Si hay error de red, no interrumpir al usuario
+      }
     }
 
     // Omitir
@@ -294,11 +324,11 @@
       });
     }
 
-    // Mostrar al cargar
+    // Verificar documentos al cargar
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", maybeShow);
+      document.addEventListener("DOMContentLoaded", checkDocumentsAndMaybeShow);
     } else {
-      maybeShow();
+      checkDocumentsAndMaybeShow();
     }
   })();
 </script>

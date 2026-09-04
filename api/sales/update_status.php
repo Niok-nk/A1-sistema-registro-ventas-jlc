@@ -50,6 +50,7 @@ try {
         'Número de serie incorrecto o inválido',
         'Factura sin código QR o CUFE (DIAN)',
         'Venta sin registro en la DIAN',
+        'Fecha de venta inválida: no corresponde al mes en curso',
     ];
     if ($estado !== 'rechazada') {
         $observaciones = null; // Limpiar al no rechazar

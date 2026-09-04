@@ -133,8 +133,8 @@ import Button from "../components/Button.astro";
         const result = await response.json();
 
         if (response.ok && result.status === 200) {
-          // Login exitoso — el token ya NO llega en el JSON, está en la cookie HttpOnly
-          // Solo guardamos datos de UI (no sensibles) en localStorage
+          // Guardar token para llamadas Bearer y datos de UI en localStorage
+          localStorage.setItem("token", result.token);
           localStorage.setItem("user", JSON.stringify(result.user));
           localStorage.setItem("userRole", result.user.rol);
 

@@ -130,10 +130,11 @@ const { size = "md" } = Astro.props;
     const hasNewAvatars = mutations.some((mutation) => {
       return Array.from(mutation.addedNodes).some((node) => {
         if (node.nodeType === 1) {
-          // Element node
+          // Element node — cast to Element for TS
+          const el = node as Element;
           return (
-            node.classList?.contains("avatar-initials") ||
-            node.querySelector?.(".avatar-initials")
+            el.classList?.contains("avatar-initials") ||
+            el.querySelector?.(".avatar-initials")
           );
         }
         return false;

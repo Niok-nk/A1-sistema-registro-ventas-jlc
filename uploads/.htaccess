@@ -1,11 +1,13 @@
-# Denegar todo acceso directo por HTTP
-Order Deny,Allow
-Deny from all
+# Denegar todo acceso directo a esta carpeta y subcarpetas
+Options -Indexes
 
-# Deshabilitar ejecución de scripts PHP (Capa extra de seguridad)
-<IfModule mod_php.c>
-    php_flag engine off
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^ - [F,L]
 </IfModule>
 
-# Prevenir listado de directorio
-Options -Indexes
+# Fallback si mod_rewrite no está disponible
+<FilesMatch ".*">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

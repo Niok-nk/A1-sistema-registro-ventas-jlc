@@ -88,10 +88,12 @@ class AuthController {
                         error_log("Error registrando sesión: " . $se->getMessage());
                     }
 
-                    // No se devuelve 'token' en el JSON — ya está en la cookie HttpOnly
+                    // Se devuelve token en JSON para compatibilidad con frontend Bearer
+                    // Y también se emite la cookie HttpOnly como capa de seguridad adicional
                     return [
                         'status'  => 200,
                         'message' => 'Login exitoso',
+                        'token'   => $jwt,
                         'user'    => $user
                     ];
             }

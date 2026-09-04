@@ -27,8 +27,8 @@ class VentasController {
                  return ['status' => 409, 'message' => 'El número de factura ya existe'];
             }
 
-            $sql = "INSERT INTO ventas (asesor_id, numero_factura, foto_factura, producto_id, numero_serie, fecha_venta, estado) 
-                    VALUES (:asesor_id, :numero_factura, :foto_factura, :producto_id, :numero_serie, :fecha_venta, 'pendiente')";
+            $sql = "INSERT INTO ventas (asesor_id, numero_factura, foto_factura, producto_id, numero_serie, fecha_venta, estado, created_at) 
+                    VALUES (:asesor_id, :numero_factura, :foto_factura, :producto_id, :numero_serie, :fecha_venta, 'pendiente', :created_at)";
             
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([
@@ -37,7 +37,8 @@ class VentasController {
                 ':foto_factura' => $data['foto_factura'],
                 ':producto_id' => $data['producto_id'],
                 ':numero_serie' => $data['numero_serie'],
-                ':fecha_venta' => $data['fecha_venta']
+                ':fecha_venta' => $data['fecha_venta'],
+                ':created_at' => $data['fecha_registro'] ?? date('Y-m-d H:i:s')
             ]);
 
             return ['status' => 201, 'message' => 'Venta registrada exitosamente'];

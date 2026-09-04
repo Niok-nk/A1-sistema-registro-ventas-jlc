@@ -23,7 +23,7 @@ $allowedOrigins = [
 $requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
 // Verificar si el origin está en la lista blanca
-if (in_array($requestOrigin, $allowedOrigins)) {
+if (in_array($requestOrigin, $allowedOrigins, true)) {
     header("Access-Control-Allow-Origin: $requestOrigin");
 } else {
     // Log del origen rechazado
