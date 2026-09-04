@@ -203,8 +203,19 @@ class WhatsAppService
             return null;
         }
 
-        // Número local colombiano de 10 dígitos (móvil empieza en 3): anteponer 57.
-        if (strlen($digits) === 10 && $digits[0] === '3') {
+        // Quitar un 0 inicial (ej: "03001234567" -> "3001234567").
+        $digits = ltrim($digits, '0');
+        if ($digits === '' || strlen($digits) < 10 || strlen($digits) > 15) {
+            return null;
+        }
+
+        // Ya está en formato internacional (empieza con 57): devolver tal cual.
+        if (strpos($digits, '57') === 0) {
+            return $digits;
+        }
+
+        // Número local colombiano de 10 dígitos: anteponer el código 57.
+        if (strlen($digits) === 10) {
             return '57' . $digits;
         }
 

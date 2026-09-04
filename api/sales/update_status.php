@@ -109,11 +109,12 @@ try {
 
     // Notificación por WhatsApp al asesor cuando el estado cambia.
     // Es no bloqueante: si falla, no afecta la actualización del estado.
+    $whatsappResult = null;
     if ($estadoCambio && !empty($ventaActual['asesor_whatsapp'])) {
         try {
             $whatsapp = new WhatsAppService();
             $nombreCliente = trim(($ventaActual['asesor_nombre'] ?? '') . ' ' . ($ventaActual['asesor_apellido'] ?? ''));
-            $whatsapp->sendTemplateMessage(
+            $whatsappResult = $whatsapp->sendTemplateMessage(
                 $ventaActual['asesor_whatsapp'],
                 'm01_srv_cambioestadoventas',
                 'en',
@@ -124,8 +125,10 @@ try {
                     $estado,
                 ]
             );
+            error_log('WhatsApp notificación - to: ' . $ventaActual['asesor_whatsapp'] . ' | ok: ' . var_export($whatsappResult['ok'] ?? false, true) . ' | error: ' . ($whatsappResult['error'] ?? ''));
         } catch (Throwable $e) {
             error_log('Error enviando notificación WhatsApp: ' . $e->getMessage());
+            $whatsappResult = ['ok' => false, 'error' => $e->getMessage()];
         }
     }
     
@@ -137,6 +140,7 @@ try {
             'id'            => $id,
             'estado'        => $estado,
             'observaciones' => $observaciones,
+            'whatsapp'      => $whatsappResult,
         ]
     ]);
     
