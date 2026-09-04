@@ -36,7 +36,8 @@ class WhatsAppService
      * @param string $to           Número de destino (acepta formatos locales o internacionales).
      * @param string $templateName Nombre de la plantilla aprobada en Meta.
      * @param string $languageCode Código de idioma (ej: 'es', 'en').
-     * @param array  $parameters   Valores para los parámetros del cuerpo (en orden).
+     * @param array  $parameters   Parámetros del cuerpo: lista posicional ['a','b'] o
+     *                             asociativa por nombre ['nombre_cliente'=>'...', ...].
      * @return array ['ok' => bool, 'message_id' => ?string, 'error' => ?string]
      */
     public function sendTemplateMessage(string $to, string $templateName, string $languageCode, array $parameters): array
@@ -53,11 +54,16 @@ class WhatsAppService
         }
 
         $bodyParams = [];
-        foreach ($parameters as $param) {
-            $bodyParams[] = [
+        foreach ($parameters as $key => $param) {
+            $item = [
                 'type' => 'text',
                 'text' => $this->sanitizeParameter($param),
             ];
+            // Si la clave es string, se envía como parámetro con nombre (named parameter).
+            if (is_string($key)) {
+                $item['parameter_name'] = $key;
+            }
+            $bodyParams[] = $item;
         }
 
         $payload = [

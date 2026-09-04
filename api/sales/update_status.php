@@ -119,10 +119,10 @@ try {
                 'm01_srv_cambioestadoventas',
                 'en',
                 [
-                    $nombreCliente,
-                    $ventaActual['numero_factura'] ?? '',
-                    $ventaActual['numero_serie'] ?? '',
-                    $estado,
+                    'nombre_cliente' => $nombreCliente,
+                    'numero_factura' => $ventaActual['numero_factura'] ?? '',
+                    'numero_serie'   => $ventaActual['numero_serie'] ?? '',
+                    'nuevo_estado'   => $estado,
                 ]
             );
             error_log('WhatsApp notificación - to: ' . $ventaActual['asesor_whatsapp'] . ' | ok: ' . var_export($whatsappResult['ok'] ?? false, true) . ' | error: ' . ($whatsappResult['error'] ?? ''));
