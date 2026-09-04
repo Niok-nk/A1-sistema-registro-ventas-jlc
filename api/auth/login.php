@@ -24,7 +24,7 @@ try {
     $result = $auth->login($data);
 } catch (Throwable $e) {
     error_log("Login fatal error: " . $e->getMessage());
-    $result = ['status' => 500, 'message' => 'DB Error: ' . $e->getMessage()];
+    $result = ['status' => 500, 'message' => 'Error interno del servidor. Por favor contacte al administrador.'];
 }
 
 http_response_code($result['status']);
