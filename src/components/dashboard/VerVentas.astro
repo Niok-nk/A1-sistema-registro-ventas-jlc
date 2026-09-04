@@ -147,6 +147,8 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
     const fechaDesde = document.getElementById("fecha-desde");
     const fechaHasta = document.getElementById("fecha-hasta");
     const estadoFilter = document.getElementById("filtro-estado");
+    const cambioDesde = document.getElementById("cambio-desde");
+    const cambioHasta = document.getElementById("cambio-hasta");
 
     // Funciones de estado
     function showLoading() {
@@ -585,6 +587,8 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
       const dateFrom = fechaDesde.value;
       const dateTo = fechaHasta.value;
       const estadoVal = estadoFilter ? estadoFilter.value : "";
+      const cambioFrom = cambioDesde ? cambioDesde.value : "";
+      const cambioTo = cambioHasta ? cambioHasta.value : "";
 
       let filtered = allSales;
 
@@ -649,6 +653,19 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         );
       }
 
+      // Filtro por rango de fechas de cambio de estado
+      if (cambioFrom || cambioTo) {
+        filtered = filtered.filter((sale) => {
+          const cambioDate = (sale.fecha_cambio_estado || "").slice(0, 10);
+          if (!cambioDate) return false;
+
+          if (cambioFrom && cambioDate < cambioFrom) return false;
+          if (cambioTo && cambioDate > cambioTo) return false;
+
+          return true;
+        });
+      }
+
       currentFilteredSales = filtered; // Guardar para exportación
       renderSales(filtered);
       updateExportButton(); // Actualizar contador
@@ -685,6 +702,15 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
 
     if (fechaHasta) {
       fechaHasta.addEventListener("change", filterSales);
+    }
+
+    // Filtrar automáticamente al cambiar fechas de cambio de estado
+    if (cambioDesde) {
+      cambioDesde.addEventListener("change", filterSales);
+    }
+
+    if (cambioHasta) {
+      cambioHasta.addEventListener("change", filterSales);
     }
 
     // ===== FUNCIONES DE EXPORTACIÓN =====
