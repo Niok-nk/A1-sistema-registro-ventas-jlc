@@ -24,6 +24,9 @@ try {
 
     // Consulta — Admin ve todas las ventas, Asesor solo ve las suyas
     $sql = "SELECT v.id, v.numero_factura, v.fecha_venta, v.estado, v.observaciones, v.numero_serie, v.producto_id, v.foto_factura, v.created_at,
+                   (SELECT a.created_at FROM auditoria a
+                    WHERE a.tabla_afectada = 'ventas' AND a.registro_id = v.id AND a.accion = 'cambio_estado_venta'
+                    ORDER BY a.id DESC LIMIT 1) AS fecha_cambio_estado,
                    v.asesor_id as usuario_id,
                    p.modelo as modelo_producto, p.codigo as codigo_producto, p.descripcion as desc_producto,
                    u.nombre as nombre_asesor, u.apellido as apellido_asesor, u.cedula as cedula_asesor,

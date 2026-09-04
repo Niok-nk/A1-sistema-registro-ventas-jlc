@@ -183,6 +183,111 @@ import Card from "../components/Card.astro";
           </p>
         </section>
 
+        <!-- SECCIÓN 5: DECLARACIONES LEGALES DEL PROGRAMA -->
+        <fieldset>
+          <div class="legal-declarations">
+            <div class="checkbox-item legal-item">
+              <input
+                type="checkbox"
+              />
+              <label for="declara_naturaleza_comercial"
+                >Declaro de manera libre, expresa, voluntaria e informada que mi
+                participación en el Programa de Incentivos de JL y RB S.A.S. –
+                JLC tiene naturaleza estrictamente comercial y promocional, y no
+                configura relación laboral, ni contrato de trabajo, ni contrato
+                realidad, ni vínculo civil o comercial alguno con JLC, conforme
+                a los artículos 22, 23 y 24 del Código Sustantivo del Trabajo.</label
+              >
+            </div>
+
+            <div class="checkbox-item legal-item">
+              <input
+                type="checkbox"
+              />
+              <label for="reconoce_no_salario"
+                >Reconozco que los incentivos, bonificaciones o beneficios que
+                eventualmente reciba no constituyen salario, no son
+                remuneración, no son habituales ni periódicos, y no integran la
+                base salarial, de conformidad con el artículo 128 del Código
+                Sustantivo del Trabajo, ni generan prestaciones sociales,
+                aportes a seguridad social o parafiscales.</label
+              >
+            </div>
+
+            <div class="checkbox-item legal-item">
+              <input
+                type="checkbox"
+              />
+              <label for="declara_no_subordinacion"
+                >Manifiesto que no existe subordinación jurídica, técnica ni
+                económica por parte de JLC, que no estoy sujeto a órdenes,
+                control disciplinario, cumplimiento de horarios, metas
+                permanentes, exclusividad, ni dependencia alguna frente a JLC.</label
+              >
+            </div>
+
+            <div class="checkbox-item legal-item">
+              <input
+                type="checkbox"
+              />
+              <label for="declara_relacion_autonoma"
+                >Declaro que mantengo una relación laboral, comercial o
+                contractual exclusiva y autónoma con un distribuidor, empleador
+                o empresa distinta a JLC, siendo dicha relación ajena e
+                independiente, sin que JLC asuma responsabilidad solidaria,
+                subsidiaria o concurrente.</label
+              >
+            </div>
+
+            <div class="checkbox-item legal-item">
+              <input
+                type="checkbox"
+              />
+              <label for="acepta_liberalidades"
+                >Acepto que los incentivos corresponden a liberalidades
+                empresariales ocasionales, otorgadas como reconocimiento
+                comercial condicionado, sin generar derechos adquiridos,
+                estabilidad, continuidad, expectativa de pago ni ingresos
+                recurrentes.</label
+              >
+            </div>
+
+            <div class="checkbox-item legal-item">
+              <input
+                type="checkbox"
+              />
+              <label for="asume_obligaciones_tributarias"
+                >Asumo de manera exclusiva las obligaciones tributarias,
+                fiscales y declarativas ante la DIAN, incluyendo impuestos,
+                retenciones o costos que se deriven de los incentivos recibidos,
+                exonerando expresa e irrevocablemente a JLC de cualquier
+                responsabilidad fiscal o laboral.</label
+              >
+            </div>
+
+            <div class="checkbox-item legal-item">
+              <input
+                type="checkbox"
+              />
+              <label for="declara_no_contrato"
+                >Declaro que esta aceptación no constituye contrato verbal ni
+                escrito, ni podrá ser utilizada para alegar vínculo laboral o
+                contrato realidad en el presente o en el futuro.</label
+              >
+            </div>
+
+            <div class="checkbox-item legal-item">
+              <input
+                type="checkbox"
+              />
+              <label for="acepta_terminos_programa"
+                >Acepto íntegramente los Términos y Condiciones del Programa de
+                Incentivos JLC.</label
+              >
+            </div>
+          </div>
+        </fieldset>
+
         <div class="terms-footer">
           <p class="footer-note">
             <strong>Última actualización:</strong> Diciembre 2025
@@ -326,6 +431,37 @@ import Card from "../components/Card.astro";
     background-color: var(--color-accent);
     color: white;
     transform: translateY(-2px);
+  }
+  fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+  .legal-declarations {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .legal-item {
+    padding: 1rem;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+  }
+  .legal-item:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  .legal-item label {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-text-main);
+    text-align: justify;
+  }
+  .legal-item input[type="checkbox"] {
+    margin-top: 0.25rem;
+    flex-shrink: 0;
   }
 
   @media (max-width: 768px) {

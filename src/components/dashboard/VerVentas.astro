@@ -147,6 +147,8 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
     const fechaDesde = document.getElementById("fecha-desde");
     const fechaHasta = document.getElementById("fecha-hasta");
     const estadoFilter = document.getElementById("filtro-estado");
+    const cambioDesde = document.getElementById("cambio-desde");
+    const cambioHasta = document.getElementById("cambio-hasta");
 
     // Funciones de estado
     function showLoading() {
@@ -289,13 +291,31 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
              </select>`
           : `<span class="status-badge status-${(sale.estado || "pendiente").toLowerCase()}">${sale.estado || "Pendiente"}</span>`;
 
-        const dateRegistered = sale.created_at
-          ? (sale.created_at.includes("T") ? sale.created_at.split("T")[0] : sale.created_at.split(" ")[0])
-          : "N/A";
+        const rawCambio = sale.fecha_cambio_estado || "";
+        const cambioParts = rawCambio.includes("T")
+          ? rawCambio.split("T")
+          : rawCambio.split(" ");
+        const fechaCambioHTML = rawCambio
+          ? `<div style="font-size:0.7rem;color:var(--color-text-secondary);margin-top:0.3rem;white-space:nowrap">Cambio: ${cambioParts[0]}${cambioParts[1] ? " " + cambioParts[1].slice(0, 5) : ""}</div>`
+          : "";
+
+        const rawRegistered = sale.created_at || "";
+        const registeredParts = rawRegistered.includes("T")
+          ? rawRegistered.split("T")
+          : rawRegistered.split(" ");
+        const dateRegistered = registeredParts[0] || "N/A";
+        const timeRegistered = registeredParts[1] || "";
 
         row.innerHTML = `
                 <td>${sale.id}</td>
-                <td>${dateRegistered}</td>
+                <td>
+                  <div>${dateRegistered}</div>
+                  ${
+                    timeRegistered
+                      ? `<div style="font-size:0.72rem;color:var(--color-text-secondary)">${timeRegistered}</div>`
+                      : ""
+                  }
+                </td>
                 <td>${sale.fecha_venta || "N/A"}</td>
                 <td>${sale.numero_factura || "N/A"}</td>
                 <td>${sale.modelo_producto || sale.desc_producto || "N/A"}</td>
@@ -305,7 +325,10 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
                   <div class="clickable-user" data-user-id="${sale.usuario_id}" style="font-size:0.75rem;color:var(--color-text-secondary)">CC: ${sale.cedula_asesor || "N/A"}</div>
                 </td>
                 <td>${sale.nombre_distribuidor || "N/A"}</td>
-                <td>${estadoHTML}</td>
+                <td>
+                  ${estadoHTML}
+                  ${fechaCambioHTML}
+                </td>
                 <td>${photoBtn}</td>
                 <td>
                   ${
@@ -321,6 +344,7 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
                         <option value="Factura sin código QR o CUFE (DIAN)" ${sale.observaciones === "Factura sin código QR o CUFE (DIAN)" ? "selected" : ""}>Sin QR o CUFE (DIAN)</option>
                         <option value="Venta sin registro en la DIAN" ${sale.observaciones === "Venta sin registro en la DIAN" ? "selected" : ""}>Sin registro DIAN</option>
                         <option value="Fecha de venta inválida: no corresponde al mes en curso" ${sale.observaciones === "Fecha de venta inválida: no corresponde al mes en curso" ? "selected" : ""}>Fecha no corresponde al mes actual</option>
+                        <option value="Factura duplicada" ${sale.observaciones === "Factura duplicada" ? "selected" : ""}>Factura duplicada</option>
                       </select>`
                       : sale.estado === "rechazada" && sale.observaciones
                         ? `<span style="font-size:0.72rem;color:#fc8181">${sale.observaciones}</span>`
@@ -563,6 +587,8 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
       const dateFrom = fechaDesde.value;
       const dateTo = fechaHasta.value;
       const estadoVal = estadoFilter ? estadoFilter.value : "";
+      const cambioFrom = cambioDesde ? cambioDesde.value : "";
+      const cambioTo = cambioHasta ? cambioHasta.value : "";
 
       let filtered = allSales;
 
@@ -627,6 +653,19 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
         );
       }
 
+      // Filtro por rango de fechas de cambio de estado
+      if (cambioFrom || cambioTo) {
+        filtered = filtered.filter((sale) => {
+          const cambioDate = (sale.fecha_cambio_estado || "").slice(0, 10);
+          if (!cambioDate) return false;
+
+          if (cambioFrom && cambioDate < cambioFrom) return false;
+          if (cambioTo && cambioDate > cambioTo) return false;
+
+          return true;
+        });
+      }
+
       currentFilteredSales = filtered; // Guardar para exportación
       renderSales(filtered);
       updateExportButton(); // Actualizar contador
@@ -663,6 +702,15 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
 
     if (fechaHasta) {
       fechaHasta.addEventListener("change", filterSales);
+    }
+
+    // Filtrar automáticamente al cambiar fechas de cambio de estado
+    if (cambioDesde) {
+      cambioDesde.addEventListener("change", filterSales);
+    }
+
+    if (cambioHasta) {
+      cambioHasta.addEventListener("change", filterSales);
     }
 
     // ===== FUNCIONES DE EXPORTACIÓN =====
