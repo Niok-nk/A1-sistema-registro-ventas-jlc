@@ -289,13 +289,23 @@ import UserProfilePopup from "../usuarios/UserProfilePopup.astro";
              </select>`
           : `<span class="status-badge status-${(sale.estado || "pendiente").toLowerCase()}">${sale.estado || "Pendiente"}</span>`;
 
-        const dateRegistered = sale.created_at
-          ? (sale.created_at.includes("T") ? sale.created_at.split("T")[0] : sale.created_at.split(" ")[0])
-          : "N/A";
+        const rawRegistered = sale.created_at || "";
+        const registeredParts = rawRegistered.includes("T")
+          ? rawRegistered.split("T")
+          : rawRegistered.split(" ");
+        const dateRegistered = registeredParts[0] || "N/A";
+        const timeRegistered = registeredParts[1] || "";
 
         row.innerHTML = `
                 <td>${sale.id}</td>
-                <td>${dateRegistered}</td>
+                <td>
+                  <div>${dateRegistered}</div>
+                  ${
+                    timeRegistered
+                      ? `<div style="font-size:0.72rem;color:var(--color-text-secondary)">${timeRegistered}</div>`
+                      : ""
+                  }
+                </td>
                 <td>${sale.fecha_venta || "N/A"}</td>
                 <td>${sale.numero_factura || "N/A"}</td>
                 <td>${sale.modelo_producto || sale.desc_producto || "N/A"}</td>
