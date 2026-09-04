@@ -3,6 +3,7 @@ require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../middleware/auth.php';
 require_once __DIR__ . '/../utils/audit_helper.php';
+require_once __DIR__ . '/../utils/WhatsAppService.php';
 
 // Verificar autenticación y rol de administrador
 $user = requireAuth();
@@ -64,8 +65,12 @@ try {
     $db = Database::getInstance();
     $conn = $db->getConnection();
     
-    // Obtener estado anterior antes de actualizar
-    $checkSql = "SELECT id, estado, observaciones FROM ventas WHERE id = :id";
+    // Obtener estado anterior antes de actualizar + datos del asesor para notificación
+    $checkSql = "SELECT v.id, v.estado, v.observaciones, v.numero_factura, v.numero_serie,
+                        u.whatsapp AS asesor_whatsapp, u.nombre AS asesor_nombre, u.apellido AS asesor_apellido
+                 FROM ventas v
+                 JOIN usuarios u ON u.id = v.asesor_id
+                 WHERE v.id = :id";
     $checkStmt = $conn->prepare($checkSql);
     $checkStmt->execute(['id' => $id]);
     $ventaActual = $checkStmt->fetch(PDO::FETCH_ASSOC);
@@ -78,6 +83,9 @@ try {
         ]);
         exit;
     }
+
+    // Determinar si el estado realmente cambia (para no notificar si solo se edita la observación)
+    $estadoCambio = ($ventaActual['estado'] !== $estado);
     
     // Actualizar estado y observaciones
     $sql = "UPDATE ventas SET estado = :estado, observaciones = :observaciones WHERE id = :id";
@@ -98,6 +106,28 @@ try {
         ['estado' => $ventaActual['estado'], 'observaciones' => $ventaActual['observaciones']],
         ['estado' => $estado, 'observaciones' => $observaciones]
     );
+
+    // Notificación por WhatsApp al asesor cuando el estado cambia.
+    // Es no bloqueante: si falla, no afecta la actualización del estado.
+    if ($estadoCambio && !empty($ventaActual['asesor_whatsapp'])) {
+        try {
+            $whatsapp = new WhatsAppService();
+            $nombreCliente = trim(($ventaActual['asesor_nombre'] ?? '') . ' ' . ($ventaActual['asesor_apellido'] ?? ''));
+            $whatsapp->sendTemplateMessage(
+                $ventaActual['asesor_whatsapp'],
+                'm01_srv_cambioestadoventas',
+                'en',
+                [
+                    $nombreCliente,
+                    $ventaActual['numero_factura'] ?? '',
+                    $ventaActual['numero_serie'] ?? '',
+                    $estado,
+                ]
+            );
+        } catch (Throwable $e) {
+            error_log('Error enviando notificación WhatsApp: ' . $e->getMessage());
+        }
+    }
     
     http_response_code(200);
     echo json_encode([
