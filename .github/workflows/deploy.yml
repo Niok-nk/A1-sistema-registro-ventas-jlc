@@ -64,6 +64,9 @@ jobs:
           JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}
           SETUP_SECRET=${{ secrets.SETUP_SECRET }}
           UPLOAD_MAX_SIZE=${{ secrets.UPLOAD_MAX_SIZE }}
+          WHATSAPP_TOKEN=${{ secrets.WHATSAPP_TOKEN }}
+          WHATSAPP_PHONE_NUMBER_ID=${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
+          WHATSAPP_API_VERSION=v25.0
           EOF
           
           echo "✅ Estructura preparada:"
