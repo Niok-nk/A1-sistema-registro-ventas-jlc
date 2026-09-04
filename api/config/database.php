@@ -164,7 +164,14 @@ class Database {
                 $options[1002] = "SET NAMES {$this->charset}"; // PDO::MYSQL_ATTR_INIT_COMMAND
                 
                 $this->conn = new PDO($dsn, $this->username, $this->password, $options);
-                $this->conn->exec("SET time_zone = '-05:00'");
+                // La zona horaria de la sesión MySQL no es crítica para la conexión.
+                // Si el usuario de la BD no tiene permisos o el servidor no lo soporta,
+                // no debe romper la conexión.
+                try {
+                    $this->conn->exec("SET time_zone = '-05:00'");
+                } catch (PDOException $e) {
+                    error_log("Warning: no se pudo configurar la zona horaria de MySQL: " . $e->getMessage());
+                }
             }
             
             // Log de éxito (solo en desarrollo)
