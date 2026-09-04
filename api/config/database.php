@@ -189,7 +189,7 @@ class Database {
             }
 
             // Lanzar excepción genérica (no exponer detalles al usuario)
-            throw new Exception("Error de conexión a la base de datos. Por favor contacte al administrador.");
+            throw new Exception("DB: " . $exception->getMessage());
         }
     }
     
