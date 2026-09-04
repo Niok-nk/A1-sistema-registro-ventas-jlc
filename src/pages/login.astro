@@ -130,7 +130,14 @@ import Button from "../components/Button.astro";
           body: JSON.stringify(data),
         });
 
-        const result = await response.json();
+        let result;
+        try {
+          result = await response.json();
+        } catch (parseError) {
+          // El backend respondió con contenido no-JSON (error 500 / HTML).
+          console.error("Respuesta no-JSON del servidor:", parseError);
+          throw new Error("Error del servidor (HTTP " + response.status + ")");
+        }
 
         if (response.ok && result.status === 200) {
           // Guardar token para llamadas Bearer y datos de UI en localStorage

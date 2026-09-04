@@ -8,17 +8,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../controllers/AuthController.php';
 
-$auth = new AuthController();
+$result = null;
 
-// Obtener datos del cuerpo de la solicitud JSON
-$data = json_decode(file_get_contents("php://input"), true);
+try {
+    $auth = new AuthController();
 
-// Fallback para x-www-form-urlencoded
-if (is_null($data)) {
-    $data = $_POST;
+    // Obtener datos del cuerpo de la solicitud JSON
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    // Fallback para x-www-form-urlencoded
+    if (is_null($data)) {
+        $data = $_POST;
+    }
+
+    $result = $auth->login($data);
+} catch (Throwable $e) {
+    error_log("Login fatal error: " . $e->getMessage());
+    $result = ['status' => 500, 'message' => 'Error interno del servidor. Por favor contacte al administrador.'];
 }
-
-$result = $auth->login($data);
 
 http_response_code($result['status']);
 echo json_encode($result);
