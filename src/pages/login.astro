@@ -140,8 +140,7 @@ import Button from "../components/Button.astro";
         }
 
         if (response.ok && result.status === 200) {
-          // Guardar token para llamadas Bearer y datos de UI en localStorage
-          localStorage.setItem("token", result.token);
+          // Guardar datos de UI en localStorage (El JWT ya está en la cookie HttpOnly segura)
           localStorage.setItem("user", JSON.stringify(result.user));
           localStorage.setItem("userRole", result.user.rol);
 
