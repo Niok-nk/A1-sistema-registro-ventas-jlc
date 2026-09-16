@@ -7,24 +7,6 @@
     RewriteBase /api/
 </IfModule>
 
-# CORS Headers - Allow requests from frontend
-<IfModule mod_headers.c>
-    # Allow all origins (adjust in production to specific domain)
-    Header set Access-Control-Allow-Origin "*"
-    
-    # Allow common headers
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
-    
-    # Allow common methods
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    
-    # Allow credentials
-    Header set Access-Control-Allow-Credentials "true"
-    
-    # Handle preflight OPTIONS requests
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^(.*)$ $1 [R=200,L]
-</IfModule>
 
 # Security: Deny access to sensitive files
 <FilesMatch "\.(db|sqlite|sqlite3|env|log|ini)$">

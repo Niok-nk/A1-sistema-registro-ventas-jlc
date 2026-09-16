@@ -64,17 +64,17 @@ class AuthController {
                     // Emitir cookie HttpOnly — JS nunca puede leerla (protección XSS)
                     $isSecure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
                     setcookie('auth_token', $jwt, [
-                        'expires'  => time() + 86400,   // 24h igual que el JWT
+                        'expires'  => time() + 28800,   // 8h igual que el JWT
                         'path'     => '/',
                         'secure'   => $isSecure,         // Solo HTTPS en producción
                         'httponly' => true,              // JS no puede leerla
                         'samesite' => 'Lax',            // Protección CSRF básica
                     ]);
 
-                    // Registrar sesión en tabla sesiones (token_hash SHA-256 + expiración 24 h)
+                    // Registrar sesión en tabla sesiones (token_hash SHA-256 + expiración 8 h)
                     try {
                         $tokenHash  = hash('sha256', $jwt);
-                        $expiresAt  = date('Y-m-d H:i:s', time() + 86400);
+                        $expiresAt  = date('Y-m-d H:i:s', time() + 28800);
                         $sesionStmt = $this->conn->prepare(
                             "INSERT INTO sesiones (usuario_id, token_hash, expires_at)
                              VALUES (:uid, :hash, :exp)"
@@ -88,12 +88,10 @@ class AuthController {
                         error_log("Error registrando sesión: " . $se->getMessage());
                     }
 
-                    // Se devuelve token en JSON para compatibilidad con frontend Bearer
-                    // Y también se emite la cookie HttpOnly como capa de seguridad adicional
+                    // Se confía 100% en la cookie HttpOnly como capa de seguridad
                     return [
                         'status'  => 200,
                         'message' => 'Login exitoso',
-                        'token'   => $jwt,
                         'user'    => $user
                     ];
             }
